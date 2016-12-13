@@ -21568,10 +21568,6 @@
 
 	var _singleRecipe2 = _interopRequireDefault(_singleRecipe);
 
-	var _addRecipeForm = __webpack_require__(184);
-
-	var _addRecipeForm2 = _interopRequireDefault(_addRecipeForm);
-
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -21606,6 +21602,7 @@
 	      var recipes = this.state.recipes.slice();
 	      var newR = {};
 	      newR.name = this.state.recipeName;
+	      console.log(newR);
 	      newR.ingredients = this.state.ingredients;
 	      newR.number = this.state.recipes.length;
 	      recipes.push(newR);
@@ -21629,12 +21626,19 @@
 	      }
 	    }
 	  }, {
+	    key: "handleChange",
+	    value: function handleChange(e) {
+	      var ing = this.state.ingredients.slice();
+	      ing[i] = e.target.value;
+	      this.setState({ ingredients: ing });
+	    }
+	  }, {
 	    key: "handleNameChange",
-	    value: function handleNameChange(text) {
+	    value: function handleNameChange(e) {
+	      console.log('called');
 	      var oldState = this.state.recipeName;
-	      var newState = oldState + text;
-	      this.setState({ recipeName: newState });
-	      console.log(this.state.recipeName);
+	      var newState = e.target.value;
+	      this.setState({ recipeName: e.target.value });
 	    }
 	  }, {
 	    key: "addIngredient",
@@ -21642,6 +21646,7 @@
 	      console.log('pushed');
 	      var recipeIngredients = this.state.ingredients.slice();
 	      recipeIngredients.push("");
+	      console.log(this.state.ingredients);
 	      this.setState({ ingredients: recipeIngredients });
 	    }
 	  }, {
@@ -21668,30 +21673,72 @@
 	          this.setState({ currentRecipe: this.state.recipes[i], boxState: "singleRecipe" });
 	        };
 
-	        _react2.default.createElement(_recipe2.default, { key: i, name: r.name, handleView: handleView, handleDelete: deleteRecipe, ingredients: r.ingredients, id: i });
+	        return _react2.default.createElement(_recipe2.default, { key: i, name: r.name, handleView: handleView, handleDelete: deleteRecipe, ingredients: r.ingredients, id: i });
 	      });
+
 	      var ingredients = this.state.ingredients.map(function (r, i) {
-	        var handleChange = function handleChange(e) {
-	          var ing = this.state.ingredients.slice();
-	          ing[i] = e.target.value;
-	          this.setState({ ingredients: ing });
-	        };
-	        //Dynamically set the value to connect to parent
-	        _react2.default.createElement(_ingredient2.default, { key: i, value: this.state.ingredients[i], handleChange: handleChange });
+
+	        return _react2.default.createElement(_ingredient2.default, { key: i, value: this.state.ingredients[i], handleChange: this.handleChange.bind(this) });
 	      });
+
+	      ingredients.push(_react2.default.createElement(_ingredient2.default, { key: 99, id: 1, value: "hello", handleChange: this.handleChange.bind(this) }));
+
 	      var buttonText = this.showAdd ? "Hide" : "Add a Recipe";
 
 	      var singleRecipe = _react2.default.createElement(_singleRecipe2.default, { closeSingleRecipe: this.closeSingleRecipe.bind(this), currentRecipe: this.state.currentRecipe });
-	      var menu = _react2.default.createElement(_menu2.default, { addIngredient: this.addIngredient.bind(this), buttonText: buttonText, toggleAddRecipe: this.toggleAddRecipe.bind(this), recipes: this.state.recipes });
-	      var addRecipeForm = _react2.default.createElement(_addRecipeForm2.default, { handleChange: this.handleNameChange.bind(this), ingredients: ingredients, addRecipe: this.addRecipe.bind(this) });
-	      console.log('d');
+	      var menu = _react2.default.createElement(_menu2.default, { addIngredient: this.addIngredient.bind(this), buttonText: buttonText, toggleAddRecipe: this.toggleAddRecipe.bind(this), recipes: recipes });
+	      console.log(ingredients);
 
 	      return _react2.default.createElement(
 	        "div",
-	        null,
-	        singleRecipe,
-	        menu,
-	        addRecipeForm
+	        { className: "row" },
+	        _react2.default.createElement(
+	          "div",
+	          { className: "col-md-6 col-md-offset-3" },
+	          _react2.default.createElement(
+	            "form",
+	            { className: "form-horizontal" },
+	            _react2.default.createElement(
+	              "div",
+	              { className: "form-group" },
+	              _react2.default.createElement(
+	                "label",
+	                { className: "col-md-2" },
+	                "Name"
+	              ),
+	              _react2.default.createElement(
+	                "div",
+	                { className: "col-md-10" },
+	                _react2.default.createElement("input", { id: "recipe-name", value: this.state.recipeName, onChange: this.handleNameChange.bind(this), className: "form-control", placeholder: "Name", type: "text" })
+	              )
+	            ),
+	            ingredients,
+	            _react2.default.createElement(
+	              "div",
+	              { className: "form-group" },
+	              _react2.default.createElement(
+	                "div",
+	                { className: "col-md-2 col-md-offset-4" },
+	                _react2.default.createElement(
+	                  "div",
+	                  { className: "btn btn-default", onClick: this.addRecipe.bind(this) },
+	                  "Add"
+	                )
+	              ),
+	              _react2.default.createElement(
+	                "div",
+	                { className: "col-md-2" },
+	                _react2.default.createElement(
+	                  "div",
+	                  { className: "btn btn-default", onClick: this.addIngredient.bind(this) },
+	                  "Add Ingredient"
+	                )
+	              )
+	            )
+	          ),
+	          singleRecipe,
+	          menu
+	        )
 	      );
 	    }
 	  }]);
@@ -21746,10 +21793,15 @@
 	        { className: "form-group" },
 	        _react2.default.createElement(
 	          "label",
-	          null,
+	          { className: "col-md-2" },
+	          "Ingredient ",
 	          this.props.id
 	        ),
-	        _react2.default.createElement("input", { id: "recipe-name", value: this.props.childValue, onChange: this.props.handleChange, className: "form-control", placeholder: "Ingredient", type: "text" })
+	        _react2.default.createElement(
+	          "div",
+	          { className: "col-md-10" },
+	          _react2.default.createElement("input", { id: "recipe-name", value: this.props.childValue, onChange: this.props.handleChange, className: "form-control", placeholder: "Ingredient", type: "text" })
+	        )
 	      );
 	    }
 	  }]);
@@ -21805,12 +21857,12 @@
 	        _react2.default.createElement(
 	          "th",
 	          null,
-	          "this.props.id"
+	          this.props.id
 	        ),
 	        _react2.default.createElement(
 	          "td",
 	          null,
-	          "this.props.name"
+	          this.props.name
 	        ),
 	        _react2.default.createElement(
 	          "td",
@@ -21833,7 +21885,7 @@
 	        _react2.default.createElement(
 	          "td",
 	          null,
-	          "this.props.ingredients"
+	          this.props.ingredients
 	        )
 	      );
 	    }
@@ -21976,93 +22028,6 @@
 	}(_react2.default.Component);
 
 	exports.default = SingleRecipe;
-
-/***/ },
-/* 184 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _react = __webpack_require__(1);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _ingredient = __webpack_require__(180);
-
-	var _ingredient2 = _interopRequireDefault(_ingredient);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var AddRecipeForm = function (_React$Component) {
-	  _inherits(AddRecipeForm, _React$Component);
-
-	  function AddRecipeForm() {
-	    _classCallCheck(this, AddRecipeForm);
-
-	    var _this = _possibleConstructorReturn(this, (AddRecipeForm.__proto__ || Object.getPrototypeOf(AddRecipeForm)).call(this));
-
-	    _this.state = {
-	      display: ""
-	    };
-	    return _this;
-	  }
-
-	  _createClass(AddRecipeForm, [{
-	    key: "handleChange",
-	    value: function handleChange(e) {
-	      console.log('change');
-	      var oldD = this.state.display;
-	      var newD = oldD + e.target.value;
-	      this.setState({ display: newD });
-	      this.props.handleChange(newD);
-	    }
-	  }, {
-	    key: "render",
-	    value: function render() {
-	      return _react2.default.createElement(
-	        "form",
-	        null,
-	        _react2.default.createElement(
-	          "div",
-	          { className: "form-group" },
-	          _react2.default.createElement(
-	            "label",
-	            null,
-	            "Name"
-	          ),
-	          _react2.default.createElement("input", { id: "recipe-name", value: this.state.display, onChange: this.handleChange, className: "form-control", placeholder: "Name", type: "text" })
-	        ),
-	        _react2.default.createElement(
-	          "div",
-	          { className: "btn btn-default", onClick: this.props.addIngredient },
-	          "Add Ingredient"
-	        ),
-	        this.props.ingredients,
-	        _react2.default.createElement(
-	          "div",
-	          { className: "btn btn-default", onClick: this.props.addRecipe },
-	          "Add"
-	        )
-	      );
-	    }
-	  }]);
-
-	  return AddRecipeForm;
-	}(_react2.default.Component);
-
-	exports.default = AddRecipeForm;
 
 /***/ }
 /******/ ]);

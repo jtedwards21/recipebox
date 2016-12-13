@@ -3,7 +3,6 @@ import Ingredient from "./ingredient";
 import Recipe from "./recipe";
 import Menu from "./menu";
 import SingleRecipe from "./singleRecipe"
-import AddRecipeForm from "./addRecipeForm"
 
 export default class Box extends React.Component {
   constructor() {
@@ -23,6 +22,7 @@ export default class Box extends React.Component {
     var recipes = this.state.recipes.slice();
     var newR = {};
     newR.name = this.state.recipeName;
+    console.log(newR);
     newR.ingredients = this.state.ingredients;
     newR.number = this.state.recipes.length;
     recipes.push(newR);
@@ -41,16 +41,22 @@ export default class Box extends React.Component {
       this.setState(showAdd: true);
     }
   }
-  handleNameChange(text) {
+  handleChange(e){
+	     var ing = this.state.ingredients.slice();
+	     ing[i] = e.target.value;
+	     this.setState({ingredients: ing});
+          }
+  handleNameChange(e) {
+    console.log('called');
     var oldState = this.state.recipeName;
-    var newState = oldState + text
-    this.setState({recipeName: newState})
-    console.log(this.state.recipeName);
+    var newState = e.target.value;
+    this.setState({recipeName:  e.target.value})
   }
   addIngredient(){
         console.log('pushed');
 	var recipeIngredients = this.state.ingredients.slice();
 	recipeIngredients.push("");
+        console.log(this.state.ingredients);
 	this.setState({ingredients: recipeIngredients});
   }
   closeSingleRecipe(){
@@ -73,29 +79,46 @@ export default class Box extends React.Component {
 	    this.setState({currentRecipe: this.state.recipes[i], boxState: "singleRecipe"});
 	  }
 
-	<Recipe　key={i} name={r.name} handleView={handleView} handleDelete={deleteRecipe} ingredients={r.ingredients} id={i}/>
+	return <Recipe　key={i} name={r.name} handleView={handleView} handleDelete={deleteRecipe} ingredients={r.ingredients} id={i}/>
 })
+
+
     var ingredients = this.state.ingredients.map(function(r, i){
-	  var handleChange = function(e){
-	     var ing = this.state.ingredients.slice();
-	     ing[i] = e.target.value;
-	     this.setState({ingredients: ing});
-          }
-	//Dynamically set the value to connect to parent
-	<Ingredient key={i} value={this.state.ingredients[i]} handleChange={handleChange} />
-})
+	  
+	return <Ingredient key={i} value={this.state.ingredients[i]} handleChange={this.handleChange.bind(this)} />
+    })
+
+    ingredients.push(<Ingredient key={99} id={1} value={"hello"} handleChange={this.handleChange.bind(this)} />)
+
     var buttonText = (this.showAdd) ? "Hide" : "Add a Recipe";
 
     var singleRecipe = <SingleRecipe closeSingleRecipe={this.closeSingleRecipe.bind(this)} currentRecipe={this.state.currentRecipe} />
-    var menu = <Menu addIngredient={this.addIngredient.bind(this)} buttonText={buttonText} toggleAddRecipe={this.toggleAddRecipe.bind(this)} recipes={this.state.recipes} />
-    var addRecipeForm = <AddRecipeForm handleChange={this.handleNameChange.bind(this)} ingredients={ingredients} addRecipe={this.addRecipe.bind(this)} />
-	console.log('d');
+    var menu = <Menu addIngredient={this.addIngredient.bind(this)} buttonText={buttonText} toggleAddRecipe={this.toggleAddRecipe.bind(this)} recipes={recipes} />
+    console.log(ingredients);
 
     return (
-	<div>
+	<div className="row">
+	  <div className="col-md-6 col-md-offset-3">
+          <form className="form-horizontal">
+	      <div className="form-group">
+		<label className="col-md-2">Name</label>
+	        <div className="col-md-10">
+	          <input id="recipe-name" value={this.state.recipeName} onChange={this.handleNameChange.bind(this)} className="form-control" placeholder="Name" type="text"/>
+	        </div>
+	      </div>
+	      {ingredients}
+	      <div className="form-group">
+		<div className="col-md-2 col-md-offset-4">
+	          <div className="btn btn-default" onClick={this.addRecipe.bind(this)}>Add</div>
+		</div>
+		<div className="col-md-2">
+                  <div className="btn btn-default" onClick={this.addIngredient.bind(this)}>Add Ingredient</div>
+		</div>
+	      </div>
+	    </form>
           {singleRecipe}
 	  {menu}
-          {addRecipeForm}
+	  </div>
 	</div>
 	
     );
