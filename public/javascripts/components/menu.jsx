@@ -18,7 +18,7 @@ export default class Menu extends React.Component {
 	      </tbody>
 	  </table>
 	  <div className="btn btn-large btn-default" onClick={this.props.toggleAddRecipe}>
-	    {buttonText}
+	    {this.props.buttonText}
 	  </div>
 	</div>
     );

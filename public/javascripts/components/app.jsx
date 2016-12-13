@@ -1,5 +1,5 @@
 import React from "react";
-import Search from "./box";
+import Box from "./box";
 
 export default function App () {
   return (

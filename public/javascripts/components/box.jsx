@@ -1,5 +1,4 @@
 import React from "react";
-import JQuery from "jquery";
 import Ingredient from "./ingredient";
 import Recipe from "./recipe";
 import Menu from "./menu";
@@ -20,6 +19,7 @@ export default class Box extends React.Component {
     };
   }
   addRecipe(){
+    console.log('add');
     var recipes = this.state.recipes.slice();
     var newR = {};
     newR.name = this.state.recipeName;
@@ -27,24 +27,28 @@ export default class Box extends React.Component {
     newR.number = this.state.recipes.length;
     recipes.push(newR);
     recipes = recipes.slice();
-    JQuery(".add-recipe-form").hide("slow");
     this.setState({recipes: recipes, recipeName: '', ingredients: [], showAdd: false});
+  }
+  componentDidMount() {
+	this.setState({ingredients: ["",""]})
   }
   toggleAddRecipe() {
     if(this.state.showAdd == true){
       //Hide with JQ
-      JQuery(".add-recipe-form").hide("slow");
       this.setState(showAdd: false);
     } else {
       //Show with JQ
-      JQuery(".add-recipe-form").show("slow");
       this.setState(showAdd: true);
     }
   }
-  handleNameChange(e) {
-    this.setState({recipeName: e.target.value})
+  handleNameChange(text) {
+    var oldState = this.state.recipeName;
+    var newState = oldState + text
+    this.setState({recipeName: newState})
+    console.log(this.state.recipeName);
   }
   addIngredient(){
+        console.log('pushed');
 	var recipeIngredients = this.state.ingredients.slice();
 	recipeIngredients.push("");
 	this.setState({ingredients: recipeIngredients});
@@ -62,7 +66,7 @@ export default class Box extends React.Component {
 	    var front = this.state.recipes.slice(0,i);
             var back = this.state.recipes(i+1);
 	    var newRecipes = front.concat(back);
-	    this.setState(recipes:newRecipes);
+	    this.setState({recipes:newRecipes});
 	  }
 	  
 	  var handleView = function(e){
@@ -82,9 +86,10 @@ export default class Box extends React.Component {
 })
     var buttonText = (this.showAdd) ? "Hide" : "Add a Recipe";
 
-    var singleRecipe = <SingleRecipe closeSingleRecipe={this.closeSingleRecipe} currentRecipe={this.state.currentRecipe} />
-    var menu = <Menu toggleAddRecipe={this.toggleAddRecipe} recipes={recipes} />
-    var addRecipeForm = <AddRecipeForm recipeName={this.state.recipeName} handleNameChange={this.handleNameChange} ingredients={ingredients} addRecipe={this.addRecipe} />
+    var singleRecipe = <SingleRecipe closeSingleRecipe={this.closeSingleRecipe.bind(this)} currentRecipe={this.state.currentRecipe} />
+    var menu = <Menu addIngredient={this.addIngredient.bind(this)} buttonText={buttonText} toggleAddRecipe={this.toggleAddRecipe.bind(this)} recipes={this.state.recipes} />
+    var addRecipeForm = <AddRecipeForm handleChange={this.handleNameChange.bind(this)} ingredients={ingredients} addRecipe={this.addRecipe.bind(this)} />
+	console.log('d');
 
     return (
 	<div>
