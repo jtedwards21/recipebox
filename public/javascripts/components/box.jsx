@@ -7,13 +7,14 @@ import SingleRecipe from "./singleRecipe"
 export default class Box extends React.Component {
   constructor() {
     super();
+    var initialIngredient = {name: "nothing", id:0}
 
     this.state = {
       currentRecipe: {},
       recipes: [],
 　　　　　　showAdd: false,
-      recipeName: "",
-      ingredients: [],
+      recipeName: "Add a name",
+      ingredients: [initialIngredient],
       boxState: "menu"
     };
   }
@@ -47,54 +48,55 @@ export default class Box extends React.Component {
 	     this.setState({ingredients: ing});
           }
   handleNameChange(e) {
-    console.log('called');
     var oldState = this.state.recipeName;
     var newState = e.target.value;
     this.setState({recipeName:  e.target.value})
   }
   addIngredient(){
-        console.log('pushed');
 	var recipeIngredients = this.state.ingredients.slice();
-	recipeIngredients.push("");
+	recipeIngredients.push({name:"nothing", id:this.state.ingredients.length});
         console.log(this.state.ingredients);
 	this.setState({ingredients: recipeIngredients});
   }
   closeSingleRecipe(){
 	this.setState({currentRecipe: {}, boxState: "menu"});
   }
+  makeDeleteFunction(i){
+    return function(e){
+      var front = this.state.recipes.slice(0,i);
+      var back = this.state.recipes(i+1);
+      var newRecipes = front.concat(back);
+      this.setState({recipes:newRecipes});
+    }
+  }
+  makeHandleViewFunction(i){
+    return function(e){
+       this.setState({currentRecipe: this.state.recipes[i], boxState: "singleRecipe"});
+    }
+  }
   render() {
-    //Put recipes in a bootstrap table
-    //Table should include a delete button
    
     var recipes = this.state.recipes.map(function(r, i){
-	  var deleteRecipe = function(e){
-	    //Delete The Recipe
-	    var front = this.state.recipes.slice(0,i);
-            var back = this.state.recipes(i+1);
-	    var newRecipes = front.concat(back);
-	    this.setState({recipes:newRecipes});
-	  }
+	  var deleteRecipe = this.makeDeleteFunction(i);
 	  
-	  var handleView = function(e){
-	    this.setState({currentRecipe: this.state.recipes[i], boxState: "singleRecipe"});
-	  }
+	  var handleView = this.makeHandleViewFunction(i);
 
-	return <Recipe　key={i} name={r.name} handleView={handleView} handleDelete={deleteRecipe} ingredients={r.ingredients} id={i}/>
+	return <Recipe　key={i} name={r.name} handleView={handleView.bind(this)} handleDelete={deleteRecipe.bind(this)} ingredients={r.ingredients} id={i}/>
 })
 
+    console.log(recipes);
 
-    var ingredients = this.state.ingredients.map(function(r, i){
-	  
-	return <Ingredient key={i} value={this.state.ingredients[i]} handleChange={this.handleChange.bind(this)} />
-    })
+    var ingredients = []
 
-    ingredients.push(<Ingredient key={99} id={1} value={"hello"} handleChange={this.handleChange.bind(this)} />)
+    for(var i = 0; i < this.state.ingredients.length; i++){
+      ingredients.push(<Ingredient key={this.state.ingredients[i].id} id={0} value={this.state.ingredients[i].name} handleChange={this.handleChange} />)
+    }
 
     var buttonText = (this.showAdd) ? "Hide" : "Add a Recipe";
 
     var singleRecipe = <SingleRecipe closeSingleRecipe={this.closeSingleRecipe.bind(this)} currentRecipe={this.state.currentRecipe} />
     var menu = <Menu addIngredient={this.addIngredient.bind(this)} buttonText={buttonText} toggleAddRecipe={this.toggleAddRecipe.bind(this)} recipes={recipes} />
-    console.log(ingredients);
+    
 
     return (
 	<div className="row">

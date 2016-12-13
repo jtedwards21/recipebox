@@ -21584,12 +21584,14 @@
 
 	    var _this = _possibleConstructorReturn(this, (Box.__proto__ || Object.getPrototypeOf(Box)).call(this));
 
+	    var initialIngredient = { name: "nothing", id: 0 };
+
 	    _this.state = {
 	      currentRecipe: {},
 	      recipes: [],
 	      showAdd: false,
-	      recipeName: "",
-	      ingredients: [],
+	      recipeName: "Add a name",
+	      ingredients: [initialIngredient],
 	      boxState: "menu"
 	    };
 	    return _this;
@@ -21635,7 +21637,6 @@
 	  }, {
 	    key: "handleNameChange",
 	    value: function handleNameChange(e) {
-	      console.log('called');
 	      var oldState = this.state.recipeName;
 	      var newState = e.target.value;
 	      this.setState({ recipeName: e.target.value });
@@ -21643,9 +21644,8 @@
 	  }, {
 	    key: "addIngredient",
 	    value: function addIngredient() {
-	      console.log('pushed');
 	      var recipeIngredients = this.state.ingredients.slice();
-	      recipeIngredients.push("");
+	      recipeIngredients.push({ name: "nothing", id: this.state.ingredients.length });
 	      console.log(this.state.ingredients);
 	      this.setState({ ingredients: recipeIngredients });
 	    }
@@ -21655,39 +21655,46 @@
 	      this.setState({ currentRecipe: {}, boxState: "menu" });
 	    }
 	  }, {
+	    key: "makeDeleteFunction",
+	    value: function makeDeleteFunction(i) {
+	      return function (e) {
+	        var front = this.state.recipes.slice(0, i);
+	        var back = this.state.recipes(i + 1);
+	        var newRecipes = front.concat(back);
+	        this.setState({ recipes: newRecipes });
+	      };
+	    }
+	  }, {
+	    key: "makeHandleViewFunction",
+	    value: function makeHandleViewFunction(i) {
+	      return function (e) {
+	        this.setState({ currentRecipe: this.state.recipes[i], boxState: "singleRecipe" });
+	      };
+	    }
+	  }, {
 	    key: "render",
 	    value: function render() {
-	      //Put recipes in a bootstrap table
-	      //Table should include a delete button
 
 	      var recipes = this.state.recipes.map(function (r, i) {
-	        var deleteRecipe = function deleteRecipe(e) {
-	          //Delete The Recipe
-	          var front = this.state.recipes.slice(0, i);
-	          var back = this.state.recipes(i + 1);
-	          var newRecipes = front.concat(back);
-	          this.setState({ recipes: newRecipes });
-	        };
+	        var deleteRecipe = this.makeDeleteFunction(i);
 
-	        var handleView = function handleView(e) {
-	          this.setState({ currentRecipe: this.state.recipes[i], boxState: "singleRecipe" });
-	        };
+	        var handleView = this.makeHandleViewFunction(i);
 
-	        return _react2.default.createElement(_recipe2.default, { key: i, name: r.name, handleView: handleView, handleDelete: deleteRecipe, ingredients: r.ingredients, id: i });
+	        return _react2.default.createElement(_recipe2.default, { key: i, name: r.name, handleView: handleView.bind(this), handleDelete: deleteRecipe.bind(this), ingredients: r.ingredients, id: i });
 	      });
 
-	      var ingredients = this.state.ingredients.map(function (r, i) {
+	      console.log(recipes);
 
-	        return _react2.default.createElement(_ingredient2.default, { key: i, value: this.state.ingredients[i], handleChange: this.handleChange.bind(this) });
-	      });
+	      var ingredients = [];
 
-	      ingredients.push(_react2.default.createElement(_ingredient2.default, { key: 99, id: 1, value: "hello", handleChange: this.handleChange.bind(this) }));
+	      for (var i = 0; i < this.state.ingredients.length; i++) {
+	        ingredients.push(_react2.default.createElement(_ingredient2.default, { key: this.state.ingredients[i].id, id: 0, value: this.state.ingredients[i].name, handleChange: this.handleChange }));
+	      }
 
 	      var buttonText = this.showAdd ? "Hide" : "Add a Recipe";
 
 	      var singleRecipe = _react2.default.createElement(_singleRecipe2.default, { closeSingleRecipe: this.closeSingleRecipe.bind(this), currentRecipe: this.state.currentRecipe });
 	      var menu = _react2.default.createElement(_menu2.default, { addIngredient: this.addIngredient.bind(this), buttonText: buttonText, toggleAddRecipe: this.toggleAddRecipe.bind(this), recipes: recipes });
-	      console.log(ingredients);
 
 	      return _react2.default.createElement(
 	        "div",
@@ -22005,11 +22012,6 @@
 	      return _react2.default.createElement(
 	        "div",
 	        { className: "single-recipe" },
-	        _react2.default.createElement(
-	          "button",
-	          { className: "close-button", onClick: this.props.closeSingleRecipe },
-	          "x"
-	        ),
 	        _react2.default.createElement(
 	          "div",
 	          { className: "recipe-title" },
